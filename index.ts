@@ -6,6 +6,7 @@ dotenv.config();
 
 const client = new Discord.Client();
 const token = process.env.DISCORD_BOT_TOKEN;
+const SCRIMBOT_CHANNEL_ID = '12345';
 
 client.login(token);
 
@@ -13,6 +14,7 @@ client.once('ready', () => {
   console.log('ready!');
 });
 
+const maps = ['Bind', 'Ascent', 'Haven', 'Split', 'Icebox'];
 const players = [];
 
 const playerNamesToCSV = (arr: string[]): string => {
@@ -38,7 +40,7 @@ const sendPlayerCount = (msg: Discord.Message) => {
 client.on('message', message => {
   if (!message.content.startsWith('!') || message.author.bot) return;
 
-  console.log(message.channel.id === '784661513050914846');
+  // (message.channel.id === SCRIMBOT_CHANNEL_ID);  restrict bot to specified channel id
 
   switch (message.content.toLowerCase()) {
     case '!scrim':
@@ -73,14 +75,7 @@ client.on('message', message => {
       sendPlayerCount(message);
       break;
     case '!map':
-      const shuffled = _.shuffle([
-        'Bind',
-        'Ascent',
-        'Haven',
-        'Split',
-        'Icebox',
-      ]);
-      message.channel.send(shuffled[0]);
+      message.channel.send(_.sample(maps));
       break;
     case '!drop':
       if (players.indexOf(message.author.username) >= 0) {
@@ -94,7 +89,7 @@ client.on('message', message => {
     //   const shuffled = _.shuffle(players);
     //   message.channel.send(shuffled.join(', ').toString());
     case '!flip':
-      message.channel.send(_.shuffle(['heads', 'tails'])[0]);
+      message.channel.send(_.sample(['heads', 'tails']));
       break;
     case '!yo':
       const tag = `<@${message.author.id}>`;
