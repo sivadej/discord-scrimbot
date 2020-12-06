@@ -8,7 +8,7 @@ dotenv.config();
 
 const client = new Discord.Client();
 const token = process.env.DISCORD_BOT_TOKEN;
-const ALLOWED_CHANNELS = ['784661513050914846', '***784692851208486972***'];
+const ALLOWED_CHANNELS = ['784661513050914846', '784692851208486972'];
 
 client.login(token);
 
@@ -19,17 +19,7 @@ client.once('ready', () => {
 const maps: Maps = ['bind', 'ascent', 'haven', 'split', 'icebox'];
 let playableMaps: Maps = [...maps];
 let bannedMaps: Maps = [];
-const players: Player[] = [
-  { name: 'asdf', rating: 0, id: '70590ffsa8671934234624' },
-  { name: 'hgjk', rating: 0, id: '7sdff05908671934234624' },
-  { name: 'xcvb', rating: 0, id: '705908671934234sdf624' },
-  { name: 'ysjsj', rating: 0, id: '70590j8671934hsh234624' },
-  { name: 'emwq', rating: 0, id: '7059j086719j34j234624' },
-  { name: 'piuh', rating: 0, id: '70590jj867j1934j234624' },
-  { name: 'anhm', rating: 0, id: '70gf590s86719j34j234624' },
-  { name: 'kjfj', rating: 0, id: '705908671sxg934234624' },
-  { name: 'k235jfj', rating: 0, id: '7059082571sxg934234624' },
-];
+const players: Player[] = [];
 
 const updatePlayableMaps = (): void => {
   playableMaps = _.pull([...maps], ...bannedMaps);
@@ -94,6 +84,12 @@ client.on('message', res => {
     } - messge: ${res.content}`
   );
 
+  const currentPlayer: Player = {
+    name: res.author.username,
+    rating: 0,
+    id: res.author.id,
+  };
+
   // ban map
   const args = res.content.slice(1).trim().split(' ');
   const mapArg = args[1] && args[1].toLowerCase();
@@ -104,17 +100,15 @@ client.on('message', res => {
       bannedMaps.push(mapArg);
       updatePlayableMaps();
       console.log('banned:', bannedMaps);
+      res.channel.send(
+        `${currentPlayer.name} banned map ${mapArg.toUpperCase()}`
+      );
+      revealMaps(res);
     } else {
       if (bannedMaps.includes(mapArg)) console.log('map already banned');
       else console.log('invalid ban');
     }
   }
-
-  const currentPlayer: Player = {
-    name: res.author.username,
-    rating: 0,
-    id: res.author.id,
-  };
 
   // returns undefined if id doesn't exist in playerlist
   const isDuplicate = Boolean(_.findKey(players, ['id', currentPlayer.id]));
@@ -177,6 +171,7 @@ client.on('message', res => {
     case BotCommands.HELP:
       break;
     case BotCommands.MAPBANRESET:
+      res.channel.send(`Map bans reset by ${currentPlayer.name}.`);
       bannedMaps.length = 0;
       updatePlayableMaps();
       revealMaps(res);

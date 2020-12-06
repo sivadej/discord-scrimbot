@@ -14,7 +14,7 @@ var types_1 = require("./types");
 dotenv.config();
 var client = new Discord.Client();
 var token = process.env.DISCORD_BOT_TOKEN;
-var ALLOWED_CHANNELS = ['784661513050914846', '***784692851208486972***'];
+var ALLOWED_CHANNELS = ['784661513050914846', '784692851208486972'];
 client.login(token);
 client.once('ready', function () {
     console.log('ready!');
@@ -22,17 +22,7 @@ client.once('ready', function () {
 var maps = ['bind', 'ascent', 'haven', 'split', 'icebox'];
 var playableMaps = __spreadArrays(maps);
 var bannedMaps = [];
-var players = [
-    { name: 'asdf', rating: 0, id: '70590ffsa8671934234624' },
-    { name: 'hgjk', rating: 0, id: '7sdff05908671934234624' },
-    { name: 'xcvb', rating: 0, id: '705908671934234sdf624' },
-    { name: 'ysjsj', rating: 0, id: '70590j8671934hsh234624' },
-    { name: 'emwq', rating: 0, id: '7059j086719j34j234624' },
-    { name: 'piuh', rating: 0, id: '70590jj867j1934j234624' },
-    { name: 'anhm', rating: 0, id: '70gf590s86719j34j234624' },
-    { name: 'kjfj', rating: 0, id: '705908671sxg934234624' },
-    { name: 'k235jfj', rating: 0, id: '7059082571sxg934234624' },
-];
+var players = [];
 var updatePlayableMaps = function () {
     playableMaps = _.pull.apply(_, __spreadArrays([__spreadArrays(maps)], bannedMaps));
 };
@@ -77,6 +67,11 @@ client.on('message', function (res) {
         res.author.bot)
         return;
     console.log(new Date() + " scrimbot command detected - username: " + res.author.username + " - messge: " + res.content);
+    var currentPlayer = {
+        name: res.author.username,
+        rating: 0,
+        id: res.author.id,
+    };
     // ban map
     var args = res.content.slice(1).trim().split(' ');
     var mapArg = args[1] && args[1].toLowerCase();
@@ -87,6 +82,8 @@ client.on('message', function (res) {
             bannedMaps.push(mapArg);
             updatePlayableMaps();
             console.log('banned:', bannedMaps);
+            res.channel.send(currentPlayer.name + " banned map " + mapArg.toUpperCase());
+            revealMaps(res);
         }
         else {
             if (bannedMaps.includes(mapArg))
@@ -95,11 +92,6 @@ client.on('message', function (res) {
                 console.log('invalid ban');
         }
     }
-    var currentPlayer = {
-        name: res.author.username,
-        rating: 0,
-        id: res.author.id,
-    };
     // returns undefined if id doesn't exist in playerlist
     var isDuplicate = Boolean(_.findKey(players, ['id', currentPlayer.id]));
     // exact commands only. handle commands with args separately
@@ -160,6 +152,7 @@ client.on('message', function (res) {
         case types_1.BotCommands.HELP:
             break;
         case types_1.BotCommands.MAPBANRESET:
+            res.channel.send("Map bans reset by " + currentPlayer.name + ".");
             bannedMaps.length = 0;
             updatePlayableMaps();
             revealMaps(res);

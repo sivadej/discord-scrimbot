@@ -18,4 +18,5 @@ export enum BotCommands {
   YO = '!yo',
   MAPBAN = '!mapban',
   MAPBANRESET = '!mapbanreset',
+  HELP = '!help',
 }

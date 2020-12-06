@@ -14,5 +14,6 @@ var BotCommands;
     BotCommands["YO"] = "!yo";
     BotCommands["MAPBAN"] = "!mapban";
     BotCommands["MAPBANRESET"] = "!mapbanreset";
+    BotCommands["HELP"] = "!help";
 })(BotCommands = exports.BotCommands || (exports.BotCommands = {}));
 //# sourceMappingURL=types.js.map
