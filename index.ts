@@ -71,7 +71,7 @@ const revealMaps = (res): void => {
   );
   res.channel.send(
     `**Playable:**  ${
-      bannedMaps.length === 0
+      playableMaps.length === 0
         ? '_None_'
         : strArrayToCSV(playableMaps).toUpperCase()
     }`

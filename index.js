@@ -59,7 +59,7 @@ var revealMaps = function (res) {
     res.channel.send("**Banned:**  " + (bannedMaps.length === 0
         ? '_None_'
         : strArrayToCSV(bannedMaps).toUpperCase()));
-    res.channel.send("**Playable:**  " + (bannedMaps.length === 0
+    res.channel.send("**Playable:**  " + (playableMaps.length === 0
         ? '_None_'
         : strArrayToCSV(playableMaps).toUpperCase()));
 };
