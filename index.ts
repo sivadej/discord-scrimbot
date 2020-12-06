@@ -62,10 +62,19 @@ const revealTeam = (players: Player[], teamName: string): string => {
 };
 
 const revealMaps = (res): void => {
-  if (bannedMaps.length > 0)
-    res.channel.send(`**Banned:**  ${strArrayToCSV(bannedMaps).toUpperCase()}`);
   res.channel.send(
-    `**Playable:**  ${strArrayToCSV(playableMaps).toUpperCase()}`
+    `**Banned:**  ${
+      bannedMaps.length === 0
+        ? '_None_'
+        : strArrayToCSV(bannedMaps).toUpperCase()
+    }`
+  );
+  res.channel.send(
+    `**Playable:**  ${
+      bannedMaps.length === 0
+        ? '_None_'
+        : strArrayToCSV(playableMaps).toUpperCase()
+    }`
   );
 };
 
@@ -147,7 +156,7 @@ client.on('message', res => {
       break;
     case BotCommands.MAPRANDOM:
       const selectedMap: string = _.sample(playableMaps);
-      res.channel.send('', {
+      res.channel.send('Randomly picking from playable maps...', {
         files: [`./map_imgs/${selectedMap.toLowerCase()}.png`],
       });
       break;
@@ -203,7 +212,7 @@ client.on('message', res => {
     res.channel.send(revealTeam(split[0], 'Attackers'));
     res.channel.send(revealTeam(split[1], 'Defenders'));
     res.channel.send(
-      `> _Randomly picking a map from playable map pool... (!pickmap to redraw)_`
+      `> _Randomly picking a map from playable map pool... (!maprandom to redraw)_`
     );
     revealMaps(res);
     const selectedMap: string = _.sample(playableMaps);
@@ -215,6 +224,8 @@ client.on('message', res => {
         res.channel.send(`Good luck teams! Scrimbot has been reset.`);
       });
     players.length = 0;
+    bannedMaps.length = 0;
+    updatePlayableMaps();
   }
 });
 
