@@ -1,7 +1,10 @@
+import Discord = require('discord.js');
+
 export interface Player {
   name: string;
   rating: number;
   id: number | string;
+  voiceState?: Discord.VoiceState;
 }
 
 export type Maps = string[];

@@ -8,7 +8,9 @@ dotenv.config();
 
 const client = new Discord.Client();
 const token = process.env.DISCORD_BOT_TOKEN;
-const ALLOWED_CHANNELS = ['784661513050914846', '784692851208486972'];
+const ALLOWED_CHANNELS = ['784661513050914846', '*784692851208486972'];
+const VOICE_CHANNEL1_ID = '708581498969653329';
+const VOICE_CHANNEL2_ID = '708581533669261342';
 
 client.login(token);
 
@@ -19,7 +21,48 @@ client.once('ready', () => {
 const maps: Maps = ['bind', 'ascent', 'haven', 'split', 'icebox'];
 let playableMaps: Maps = [...maps];
 let bannedMaps: Maps = [];
-const players: Player[] = [];
+const players: Player[] = [
+  {
+    name: 'ebomb',
+    rating: 0,
+    id: '14144fdg7155280773122',
+  },
+  {
+    name: 'ebo3rmb',
+    rating: 0,
+    id: '1414471552835n0773122',
+  },
+  {
+    name: 'ebo12tmb',
+    rating: 0,
+    id: '1414357n47155280773122',
+  },
+  {
+    name: 'ebodghmb',
+    rating: 0,
+    id: '141447155280773357n122',
+  },
+  {
+    name: 'ebdrhomb',
+    rating: 0,
+    id: '141447155280n73773122',
+  },
+  {
+    name: 'ebt42omb',
+    rating: 0,
+    id: '1735741447155280773122',
+  },
+  {
+    name: 'ebg rdomb',
+    rating: 0,
+    id: '14144715527380773122',
+  },
+  {
+    name: 'ebrgeomb',
+    rating: 0,
+    id: '141447155234580773122',
+  },
+];
 
 const updatePlayableMaps = (): void => {
   playableMaps = _.pull([...maps], ...bannedMaps);
@@ -43,10 +86,6 @@ const sendPlayerCount = (msg: Discord.Message) => {
     const playerNames: string[] = players.map(p => p.name);
     msg.channel.send(`${strArrayToCSV(playerNames)}`);
   }
-};
-
-const getPlayerObject = (msg: Discord.Message): Player => {
-  return { name: '', rating: 0, id: 0 };
 };
 
 const getPlayerTag = (player: Player): string => {
@@ -78,6 +117,28 @@ const revealMaps = (res): void => {
   );
 };
 
+client.on('voiceStateUpdate', (old, curr) => {
+  // console.log('----old---');
+  // console.log(old.id);
+  // console.log(old.channelID);
+  // console.log('----new---');
+  // console.log(curr.id);
+  console.log(curr.channelID);
+  // instantiate
+  // console.log(old.guild);
+  // console.log(curr.guild.member.name);
+  //const member = new Discord.GuildMember(client,  , curr.guild);
+  //member.voice.kick();
+});
+
+client.on('message', async msg => {
+  // if (msg.member.voice.channel) {
+  //   const connection = await msg.member.voice.channel.join();
+  // }
+  //await msg.member.voice.setChannel('708581498969653329');
+  //console.log(msg.guild.members);
+});
+
 // shuffle teams randomly
 client.on('message', res => {
   if (
@@ -93,11 +154,22 @@ client.on('message', res => {
     } - messge: ${res.content}`
   );
 
+  console.log(res);
+
   const currentPlayer: Player = {
     name: res.author.username,
     rating: 0,
     id: res.author.id,
+    voiceState: res.member.voice,
   };
+
+  if (res.content.toLowerCase().startsWith('!test')) {
+    console.log('test');
+    players.forEach(p => {
+      console.log('do something for player', p.name);
+      p.voiceState.setChannel('708581498969653329');
+    });
+  }
 
   // ban map
   const args = res.content.slice(1).trim().split(' ');
@@ -221,26 +293,22 @@ client.on('message', res => {
         files: [`./map_imgs/${selectedMap.toLowerCase()}.png`],
       })
       .then(() => {
-        res.channel.send(`Good luck teams! Scrimbot has been reset.`);
+        res.channel.send(
+          `Good luck teams! Now moving you to your team voice channels...`
+        );
+        console.log('moving players to voice channels...');
+        setTimeout(() => {
+          split[0].forEach(p => {
+            p.voiceState && p.voiceState.setChannel(VOICE_CHANNEL1_ID);
+          });
+          split[1].forEach(p => {
+            p.voiceState && p.voiceState.setChannel(VOICE_CHANNEL2_ID);
+          });
+          console.log('moved players to voice channels.');
+        }, 2000);
       });
     players.length = 0;
     bannedMaps.length = 0;
     updatePlayableMaps();
   }
 });
-
-// matchmaker
-// accept names and rankings
-// return balanced teams
-// client.on('res', res => {
-//   const prefix = '!match ';
-//   if (res.content.startsWith(prefix)) {
-//     const args = res.content.slice(prefix.length).trim().split(' ');
-//     console.log(args);
-//     res.channel.send(args[0]);
-//   }
-// });
-
-// move players into voice channels
-
-// map selection
