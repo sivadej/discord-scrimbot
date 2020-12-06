@@ -21,48 +21,7 @@ client.once('ready', () => {
 const maps: Maps = ['bind', 'ascent', 'haven', 'split', 'icebox'];
 let playableMaps: Maps = [...maps];
 let bannedMaps: Maps = [];
-const players: Player[] = [
-  {
-    name: 'ebomb',
-    rating: 0,
-    id: '14144fdg7155280773122',
-  },
-  {
-    name: 'ebo3rmb',
-    rating: 0,
-    id: '1414471552835n0773122',
-  },
-  {
-    name: 'ebo12tmb',
-    rating: 0,
-    id: '1414357n47155280773122',
-  },
-  {
-    name: 'ebodghmb',
-    rating: 0,
-    id: '141447155280773357n122',
-  },
-  {
-    name: 'ebdrhomb',
-    rating: 0,
-    id: '141447155280n73773122',
-  },
-  {
-    name: 'ebt42omb',
-    rating: 0,
-    id: '1735741447155280773122',
-  },
-  {
-    name: 'ebg rdomb',
-    rating: 0,
-    id: '14144715527380773122',
-  },
-  {
-    name: 'ebrgeomb',
-    rating: 0,
-    id: '141447155234580773122',
-  },
-];
+const players: Player[] = [];
 
 const updatePlayableMaps = (): void => {
   playableMaps = _.pull([...maps], ...bannedMaps);
@@ -116,28 +75,6 @@ const revealMaps = (res): void => {
     }`
   );
 };
-
-client.on('voiceStateUpdate', (old, curr) => {
-  // console.log('----old---');
-  // console.log(old.id);
-  // console.log(old.channelID);
-  // console.log('----new---');
-  // console.log(curr.id);
-  console.log(curr.channelID);
-  // instantiate
-  // console.log(old.guild);
-  // console.log(curr.guild.member.name);
-  //const member = new Discord.GuildMember(client,  , curr.guild);
-  //member.voice.kick();
-});
-
-client.on('message', async msg => {
-  // if (msg.member.voice.channel) {
-  //   const connection = await msg.member.voice.channel.join();
-  // }
-  //await msg.member.voice.setChannel('708581498969653329');
-  //console.log(msg.guild.members);
-});
 
 // shuffle teams randomly
 client.on('message', res => {
