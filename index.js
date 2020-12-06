@@ -3,16 +3,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var _ = require("lodash");
 var dotenv = require("dotenv");
 var Discord = require("discord.js");
+var types_1 = require("./types");
 dotenv.config();
 var client = new Discord.Client();
 var token = process.env.DISCORD_BOT_TOKEN;
-var SCRIMBOT_CHANNEL_ID = '12345';
+var ALLOWED_CHANNELS = ['784661513050914846', '784692851208486972'];
 client.login(token);
 client.once('ready', function () {
     console.log('ready!');
 });
 var maps = ['Bind', 'Ascent', 'Haven', 'Split', 'Icebox'];
-var players = [];
+var players = [
+    { name: 'asdf', rating: 0, id: '70590ffsa8671934234624' },
+    { name: 'hgjk', rating: 0, id: '7sdff05908671934234624' },
+    { name: 'xcvb', rating: 0, id: '705908671934234sdf624' },
+    { name: 'ysjsj', rating: 0, id: '70590j8671934hsh234624' },
+    { name: 'emwq', rating: 0, id: '7059j086719j34j234624' },
+    { name: 'piuh', rating: 0, id: '70590jj867j1934j234624' },
+    { name: 'anhm', rating: 0, id: '70gf590s86719j34j234624' },
+    { name: 'kjfj', rating: 0, id: '705908671sxg934234624' },
+    { name: 'kjdsffj', rating: 0, id: '705908671sxg345934234624' },
+];
 var playerNamesToCSV = function (arr) {
     if (!arr)
         return null;
@@ -24,68 +35,93 @@ var sendPlayerCount = function (msg) {
     else if (players.length >= 10)
         return;
     else {
-        msg.channel.send("Currently " + players.length + " waiting to play. Looking for " + (10 - players.length) + " more!");
-        msg.channel.send("Player list: " + playerNamesToCSV(players));
+        msg.channel.send("**Currently " + players.length + " waiting to play. Looking for " + (10 - players.length) + " more!**");
+        var playerNames = players.map(function (p) { return p.name; });
+        msg.channel.send("Player list: " + playerNamesToCSV(playerNames));
     }
 };
+var getPlayerObject = function (msg) {
+    return { name: '', rating: 0, id: 0 };
+};
+var getPlayerTag = function (player) {
+    return "<@" + player.id + ">";
+};
+var revealTeam = function (players, teamName) {
+    var revealStr = "**" + teamName + "**";
+    players.forEach(function (p) {
+        revealStr += "\n" + p.name + " " + getPlayerTag(p);
+    });
+    return revealStr;
+};
 // shuffle teams randomly
-client.on('message', function (message) {
-    if (!message.content.startsWith('!') || message.author.bot)
+client.on('message', function (res) {
+    if (!ALLOWED_CHANNELS.includes(res.channel.id) ||
+        !res.content.startsWith('!') ||
+        res.author.bot)
         return;
-    // (message.channel.id === SCRIMBOT_CHANNEL_ID);  restrict bot to specified channel id
-    switch (message.content.toLowerCase()) {
-        case '!scrim':
-            console.log('players', playerNamesToCSV(players));
-            console.log('author', message.author);
+    console.log('scrimbot\nmsg detected', res);
+    var currentPlayer = {
+        name: res.author.username,
+        rating: 0,
+        id: res.author.id,
+    };
+    // returns undefined if id doesn't exist in playerlist
+    var isDuplicate = Boolean(_.findKey(players, ['id', currentPlayer.id]));
+    switch (res.content.toLowerCase()) {
+        case types_1.BotCommands.SCRIM:
             if (players.length === 10) {
-                message.channel.send("Sorry bro, game is full!");
+                res.channel.send("Sorry bro, game is full!");
                 break;
             }
-            if (players.indexOf(message.author.username) >= 0) {
-                message.channel.send(message.author.username + ": You're already in, dumbass.");
-                break;
+            if (isDuplicate) {
+                console.log('skipping duplicate id add');
+                res.channel.send(currentPlayer.name + ": you're already in, dumbass");
             }
-            players.push(message.author.username);
-            message.channel.send("Added " + message.author.username + "!");
-            sendPlayerCount(message);
+            else {
+                console.log('adding this player to list...');
+                players.push(currentPlayer);
+                console.log('updated players list', players);
+                res.channel.send("you've been added, " + getPlayerTag(currentPlayer));
+            }
+            sendPlayerCount(res);
             break;
-        case '!reset':
-            if (message.author.username === players[0]) {
+        case types_1.BotCommands.RESET:
+            if (res.author.username === players[0]) {
                 players.length = 0;
-                message.channel.send("List was reset by " + message.author.username);
+                res.channel.send("List was reset by " + res.author.username);
                 break;
             }
             else {
-                message.channel.send("Only first player " + players[0] + " is allowed to reset");
+                res.channel.send("Only first player " + players[0] + " is allowed to reset");
             }
             break;
-        case '!count':
-            sendPlayerCount(message);
+        case types_1.BotCommands.COUNT:
+            sendPlayerCount(res);
             break;
-        case '!map':
-            message.channel.send(_.sample(maps));
+        case types_1.BotCommands.MAP:
+            var selectedMap = _.sample(maps);
+            res.channel.send('', {
+                files: ["./map_imgs/" + selectedMap.toLowerCase() + ".png"],
+            });
             break;
-        case '!drop':
-            if (players.indexOf(message.author.username) >= 0) {
-                _.pull(players, message.author.username);
-                message.channel.send(message.author.username + " dropped out.");
-                sendPlayerCount(message);
+        case types_1.BotCommands.DROP:
+            if (players.indexOf(res.author.username) >= 0) {
+                _.pull(players, res.author.username);
+                res.channel.send(res.author.username + " dropped out.");
+                sendPlayerCount(res);
             }
             else
-                message.channel.send(message.author.username + " not found in list.");
+                res.channel.send(res.author.username + " not found in list.");
             break;
-        // case '!shuffle':
-        //   const shuffled = _.shuffle(players);
-        //   message.channel.send(shuffled.join(', ').toString());
-        case '!flip':
-            message.channel.send(_.sample(['heads', 'tails']));
+        case types_1.BotCommands.FLIP:
+            res.channel.send(_.sample(['HEADS', 'TAILS']));
             break;
-        case '!yo':
-            var tag = "<@" + message.author.id + ">";
-            message.channel.send("sup, " + tag + "?");
+        case types_1.BotCommands.YO:
+            var tag = "<@" + res.author.id + ">";
+            res.channel.send("sup, " + tag + "?");
             break;
-        case '!chunky':
-            message.channel.send('', {
+        case types_1.BotCommands.CHUNKY:
+            res.channel.send('', {
                 files: [
                     'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
                 ],
@@ -96,25 +132,33 @@ client.on('message', function (message) {
     }
     // finish tasks at 10 players: shuffle, assign teams, reset bot
     if (players.length === 10) {
-        message.channel.send("We got ourselves a match! Generating random teams...");
+        res.channel.send(">>> **We got ourselves a match! Generating random teams...**");
         var shuffled = _.shuffle(players);
         var split = _.chunk(shuffled, 5);
-        message.channel.send("Team 1: " + playerNamesToCSV(split[0]));
-        message.channel.send("Team 2: " + playerNamesToCSV(split[1]));
+        res.channel.send(revealTeam(split[0], 'Attackers'));
+        res.channel.send(revealTeam(split[1], 'Defenders'));
+        res.channel.send("_Randomly picking a map... (!map to redraw)_");
+        var selectedMap = _.sample(maps);
+        res.channel
+            .send('', {
+            files: ["./map_imgs/" + selectedMap.toLowerCase() + ".png"],
+        })
+            .then(function () {
+            res.channel.send("Good luck teams! Scrimbot has been reset.");
+        });
         // reset bot
         players.length = 0;
-        message.channel.send("Good luck teams! Scrimbot has been reset.");
     }
 });
 // matchmaker
 // accept names and rankings
 // return balanced teams
-// client.on('message', message => {
+// client.on('res', res => {
 //   const prefix = '!match ';
-//   if (message.content.startsWith(prefix)) {
-//     const args = message.content.slice(prefix.length).trim().split(' ');
+//   if (res.content.startsWith(prefix)) {
+//     const args = res.content.slice(prefix.length).trim().split(' ');
 //     console.log(args);
-//     message.channel.send(args[0]);
+//     res.channel.send(args[0]);
 //   }
 // });
 // move players into voice channels

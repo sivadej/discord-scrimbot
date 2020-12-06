@@ -4,4 +4,15 @@ export interface Player {
   id: number | string;
 }
 
-export interface Channel {}
+export type Maps = string[];
+
+export enum BotCommands {
+  SCRIM = '!scrim',
+  DROP = '!drop',
+  COUNT = '!count',
+  RESET = '!reset',
+  MAP = '!map',
+  FLIP = '!flip',
+  CHUNKY = '!chunky',
+  YO = '!yo',
+}
