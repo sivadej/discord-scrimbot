@@ -14,7 +14,7 @@ var types_1 = require("./types");
 dotenv.config();
 var client = new Discord.Client();
 var token = process.env.DISCORD_BOT_TOKEN;
-var ALLOWED_CHANNELS = ['784661513050914846', '*784692851208486972'];
+var ALLOWED_CHANNELS = ['784661513050914846', '784692851208486972'];
 var VOICE_CHANNEL1_ID = '708581498969653329';
 var VOICE_CHANNEL2_ID = '708581533669261342';
 client.login(token);
@@ -103,6 +103,11 @@ client.on('message', function (res) {
                 console.log('invalid ban');
         }
     }
+    var randomImages = [
+        'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
+        'https://i.redd.it/wc1j9rrxzpn21.jpg',
+        'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
+    ];
     // returns undefined if id doesn't exist in playerlist
     var isDuplicate = Boolean(_.findKey(players, ['id', currentPlayer.id]));
     // exact commands only. handle commands with args separately
@@ -175,8 +180,8 @@ client.on('message', function (res) {
         case types_1.BotCommands.CHUNKY:
             res.channel.send('', {
                 files: [
-                    'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
-                ],
+                    _.sample(randomImages)
+                ]
             });
             break;
         default:

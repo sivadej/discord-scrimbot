@@ -14,6 +14,7 @@
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
     "lodash": "^4.17.20",
+    "nodemon": "^2.0.6",
     "sqlite": "^4.0.18",
     "sqlite3": "^5.0.0",
     "typescript": "^4.1.2"

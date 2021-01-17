@@ -8,7 +8,7 @@ dotenv.config();
 
 const client = new Discord.Client();
 const token = process.env.DISCORD_BOT_TOKEN;
-const ALLOWED_CHANNELS = ['784661513050914846', '*784692851208486972'];
+const ALLOWED_CHANNELS = ['784661513050914846', '784692851208486972'];
 const VOICE_CHANNEL1_ID = '708581498969653329';
 const VOICE_CHANNEL2_ID = '708581533669261342';
 
@@ -128,6 +128,12 @@ client.on('message', res => {
     }
   }
 
+  const randomImages = [
+    'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
+    'https://i.redd.it/wc1j9rrxzpn21.jpg',
+    'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
+  ];
+
   // returns undefined if id doesn't exist in playerlist
   const isDuplicate = Boolean(_.findKey(players, ['id', currentPlayer.id]));
 
@@ -200,11 +206,7 @@ client.on('message', res => {
       break;
     case BotCommands.CHUNKY:
       res.channel.send('', {
-        files: [
-          'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
-          //'https://i.redd.it/wc1j9rrxzpn21.jpg',
-          //'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
-        ],
+        files: [_.sample(randomImages)],
       });
       break;
     default:
@@ -234,7 +236,7 @@ client.on('message', res => {
           `Good luck teams! Now moving you to your team voice channels...`
         );
         console.log('moving players to voice channels...');
-        setTimeout(() => {
+        const timeout = setTimeout(() => {
           split[0].forEach(p => {
             p.voiceState && p.voiceState.setChannel(VOICE_CHANNEL1_ID);
           });
@@ -242,7 +244,8 @@ client.on('message', res => {
             p.voiceState && p.voiceState.setChannel(VOICE_CHANNEL2_ID);
           });
           console.log('moved players to voice channels.');
-        }, 2000);
+        }, 5000);
+        return clearTimeout(timeout);
       });
     players.length = 0;
     bannedMaps.length = 0;
