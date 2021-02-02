@@ -107,12 +107,29 @@ client.on('message', function (res) {
         'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
         'https://i.redd.it/wc1j9rrxzpn21.jpg',
         'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
+        'https://storage.googleapis.com/afs-prod/media/media:dc4d3a47aba34e0ca4ad46167b686181/800.jpeg',
+        'https://static.openfoodfacts.org/images/products/871/410/024/0243/front_fr.32.full.jpg',
+        'https://i.redd.it/thfagcs2qxv31.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/3/3d/Chunky_Monkey.jpg',
     ];
     // returns undefined if id doesn't exist in playerlist
     var isDuplicate = Boolean(_.findKey(players, ['id', currentPlayer.id]));
     // exact commands only. handle commands with args separately
     switch (res.content.toLowerCase()) {
         case types_1.BotCommands.SCRIM:
+            // inactivity reset
+            var timeout_1 = null;
+            var startDelayedReset_1 = function () {
+                timeout_1 = setTimeout(function () {
+                    players.length = 0;
+                    res.channel.send("resetting...");
+                }, 600000);
+            };
+            var restartDelayedReset = function () {
+                if (timeout_1 !== null)
+                    clearTimeout(timeout_1);
+                startDelayedReset_1();
+            };
             if (players.length === 10) {
                 res.channel.send("Sorry bro, game is full!");
                 break;
@@ -126,6 +143,8 @@ client.on('message', function (res) {
                 players.push(currentPlayer);
                 console.log('updated players list', players);
                 res.channel.send("you've been added, " + getPlayerTag(currentPlayer));
+                res.channel.send("scrimbot will automatically reset after 10 minutes of inactivity");
+                restartDelayedReset();
             }
             sendPlayerCount(res);
             break;
@@ -179,9 +198,7 @@ client.on('message', function (res) {
             break;
         case types_1.BotCommands.CHUNKY:
             res.channel.send('', {
-                files: [
-                    _.sample(randomImages)
-                ]
+                files: [_.sample(randomImages)],
             });
             break;
         default:
@@ -204,7 +221,7 @@ client.on('message', function (res) {
             .then(function () {
             res.channel.send("Good luck teams! Now moving you to your team voice channels...");
             console.log('moving players to voice channels...');
-            setTimeout(function () {
+            var timeout = setTimeout(function () {
                 split_1[0].forEach(function (p) {
                     p.voiceState && p.voiceState.setChannel(VOICE_CHANNEL1_ID);
                 });
@@ -212,7 +229,8 @@ client.on('message', function (res) {
                     p.voiceState && p.voiceState.setChannel(VOICE_CHANNEL2_ID);
                 });
                 console.log('moved players to voice channels.');
-            }, 2000);
+            }, 5000);
+            return clearTimeout(timeout);
         });
         players.length = 0;
         bannedMaps.length = 0;

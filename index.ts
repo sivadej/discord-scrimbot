@@ -132,6 +132,10 @@ client.on('message', res => {
     'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
     'https://i.redd.it/wc1j9rrxzpn21.jpg',
     'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
+    'https://storage.googleapis.com/afs-prod/media/media:dc4d3a47aba34e0ca4ad46167b686181/800.jpeg',
+    'https://static.openfoodfacts.org/images/products/871/410/024/0243/front_fr.32.full.jpg',
+    'https://i.redd.it/thfagcs2qxv31.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/3/3d/Chunky_Monkey.jpg',
   ];
 
   // returns undefined if id doesn't exist in playerlist
@@ -140,6 +144,18 @@ client.on('message', res => {
   // exact commands only. handle commands with args separately
   switch (res.content.toLowerCase()) {
     case BotCommands.SCRIM:
+      // inactivity reset
+      let timeout = null;
+      const startDelayedReset = () => {
+        timeout = setTimeout(()=>{
+          players.length = 0;
+          res.channel.send(`resetting...`);
+        }, 600000)
+      }
+      const restartDelayedReset = () => {
+        if (timeout !== null) clearTimeout(timeout);
+        startDelayedReset();
+      }
       if (players.length === 10) {
         res.channel.send(`Sorry bro, game is full!`);
         break;
@@ -152,6 +168,8 @@ client.on('message', res => {
         players.push(currentPlayer);
         console.log('updated players list', players);
         res.channel.send(`you've been added, ${getPlayerTag(currentPlayer)}`);
+        res.channel.send(`scrimbot will automatically reset after 10 minutes of inactivity`);
+        restartDelayedReset();
       }
       sendPlayerCount(res);
       break;
