@@ -13,7 +13,7 @@ export enum BotCommands {
   SCRIM = '!scrim',
   DROP = '!drop',
   COUNT = '!count',
-  RESETPLAYERS = '!resetplayers',
+  RESETPLAYERS = '!reset',
   MAPRANDOM = '!maprandom',
   MAPS = '!maps',
   FLIP = '!flip',
@@ -22,4 +22,5 @@ export enum BotCommands {
   MAPBAN = '!mapban',
   MAPBANRESET = '!mapbanreset',
   HELP = '!help',
+  SUPPORT = '!support',
 }

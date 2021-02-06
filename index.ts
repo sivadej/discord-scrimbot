@@ -136,26 +136,61 @@ client.on('message', res => {
     'https://static.openfoodfacts.org/images/products/871/410/024/0243/front_fr.32.full.jpg',
     'https://i.redd.it/thfagcs2qxv31.jpg',
     'https://upload.wikimedia.org/wikipedia/commons/3/3d/Chunky_Monkey.jpg',
+    'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
+    'https://i.redd.it/wc1j9rrxzpn21.jpg',
+    'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
+    'https://storage.googleapis.com/afs-prod/media/media:dc4d3a47aba34e0ca4ad46167b686181/800.jpeg',
+    'https://static.openfoodfacts.org/images/products/871/410/024/0243/front_fr.32.full.jpg',
+    'https://i.redd.it/thfagcs2qxv31.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/3/3d/Chunky_Monkey.jpg',
+    'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
+    'https://i.redd.it/wc1j9rrxzpn21.jpg',
+    'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
+    'https://storage.googleapis.com/afs-prod/media/media:dc4d3a47aba34e0ca4ad46167b686181/800.jpeg',
+    'https://static.openfoodfacts.org/images/products/871/410/024/0243/front_fr.32.full.jpg',
+    'https://i.redd.it/thfagcs2qxv31.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/3/3d/Chunky_Monkey.jpg',
+    'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
+    'https://i.redd.it/wc1j9rrxzpn21.jpg',
+    'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
+    'https://storage.googleapis.com/afs-prod/media/media:dc4d3a47aba34e0ca4ad46167b686181/800.jpeg',
+    'https://static.openfoodfacts.org/images/products/871/410/024/0243/front_fr.32.full.jpg',
+    'https://i.redd.it/thfagcs2qxv31.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/3/3d/Chunky_Monkey.jpg',
+    'https://www.benjerry.com/files/live/sites/systemsite/files/flavors/products/us/pint/chunky-monkey-detail.png',
+    'https://i.redd.it/wc1j9rrxzpn21.jpg',
+    'https://d2iiahg0ip5afn.cloudfront.net/media/ben_jerry/images/chunkymonkey.jpg',
+    'https://storage.googleapis.com/afs-prod/media/media:dc4d3a47aba34e0ca4ad46167b686181/800.jpeg',
+    'https://static.openfoodfacts.org/images/products/871/410/024/0243/front_fr.32.full.jpg',
+    'https://i.redd.it/thfagcs2qxv31.jpg',
+    'https://upload.wikimedia.org/wikipedia/commons/3/3d/Chunky_Monkey.jpg',
+    'https://i.etsystatic.com/24745420/d/il/f7f0b9/2852681745/il_340x270.2852681745_dtwc.jpg'
   ];
+
+  // !support https://www.buymeacoffee.com/ebomby
 
   // returns undefined if id doesn't exist in playerlist
   const isDuplicate = Boolean(_.findKey(players, ['id', currentPlayer.id]));
+  
+  // var for reset timer
+  let timeout;
+  let timeout5;
+  let timeout1;
 
   // exact commands only. handle commands with args separately
   switch (res.content.toLowerCase()) {
     case BotCommands.SCRIM:
       // inactivity reset
-      let timeout = null;
-      const startDelayedReset = () => {
-        timeout = setTimeout(()=>{
-          players.length = 0;
-          res.channel.send(`resetting...`);
-        }, 600000)
-      }
-      const restartDelayedReset = () => {
-        if (timeout !== null) clearTimeout(timeout);
-        startDelayedReset();
-      }
+      // const startDelayedReset = () => {
+      //   timeout = setTimeout(()=>{
+      //     players.length = 0;
+      //     res.channel.send(`resetting...`);
+      //   }, 5000)
+      // }
+      // const restartDelayedReset = () => {
+      //   clearTimeout(timeout);
+      //   startDelayedReset();
+      // }
       if (players.length === 10) {
         res.channel.send(`Sorry bro, game is full!`);
         break;
@@ -164,25 +199,24 @@ client.on('message', res => {
         console.log('skipping duplicate id add');
         res.channel.send(`${currentPlayer.name}: you're already in, dumbass`);
       } else {
+        clearTimeout(timeout);
         console.log('adding this player to list...');
         players.push(currentPlayer);
         console.log('updated players list', players);
         res.channel.send(`you've been added, ${getPlayerTag(currentPlayer)}`);
-        res.channel.send(`scrimbot will automatically reset after 10 minutes of inactivity`);
-        restartDelayedReset();
+        if (players.length === 1) {  
+          res.channel.send(`scrimbot will automatically reset after 10 minutes of inactivity.`);
+          timeout = setTimeout(()=>{
+            players.length = 0;
+            res.channel.send(`resetting...`);
+          }, 600000)
+        }
       }
       sendPlayerCount(res);
       break;
     case BotCommands.RESETPLAYERS:
-      if (res.author.id === players[0].id) {
-        players.length = 0;
-        res.channel.send(`List was reset by ${res.author.username}`);
-        break;
-      } else {
-        res.channel.send(
-          `Only first player ${players[0].name} is allowed to reset`
-        );
-      }
+      players.length = 0;
+      res.channel.send(`List was reset by ${res.author.username}`);
       break;
     case BotCommands.COUNT:
       sendPlayerCount(res);
@@ -226,6 +260,9 @@ client.on('message', res => {
       res.channel.send('', {
         files: [_.sample(randomImages)],
       });
+      break;
+    case BotCommands.SUPPORT:
+      res.channel.send(`https://www.buymeacoffee.com/ebomby`);
       break;
     default:
       break;

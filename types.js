@@ -6,7 +6,7 @@ var BotCommands;
     BotCommands["SCRIM"] = "!scrim";
     BotCommands["DROP"] = "!drop";
     BotCommands["COUNT"] = "!count";
-    BotCommands["RESETPLAYERS"] = "!resetplayers";
+    BotCommands["RESETPLAYERS"] = "!reset";
     BotCommands["MAPRANDOM"] = "!maprandom";
     BotCommands["MAPS"] = "!maps";
     BotCommands["FLIP"] = "!flip";
@@ -15,5 +15,6 @@ var BotCommands;
     BotCommands["MAPBAN"] = "!mapban";
     BotCommands["MAPBANRESET"] = "!mapbanreset";
     BotCommands["HELP"] = "!help";
+    BotCommands["SUPPORT"] = "!support";
 })(BotCommands = exports.BotCommands || (exports.BotCommands = {}));
 //# sourceMappingURL=types.js.map
