@@ -291,7 +291,7 @@ client.on('message', res => {
           `Good luck teams! Now moving you to your team voice channels...`
         );
         console.log('moving players to voice channels...');
-        const timeout = setTimeout(() => {
+        const voiceMoveTimeout = setTimeout(() => {
           split[0].forEach(p => {
             p.voiceState && p.voiceState.setChannel(VOICE_CHANNEL1_ID);
           });
@@ -300,7 +300,7 @@ client.on('message', res => {
           });
           console.log('moved players to voice channels.');
         }, 5000);
-        return clearTimeout(timeout);
+        return clearTimeout(voiceMoveTimeout);
       });
     players.length = 0;
     bannedMaps.length = 0;
